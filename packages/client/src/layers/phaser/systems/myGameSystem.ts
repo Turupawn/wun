@@ -6,11 +6,45 @@ import {
 } from "@latticexyz/phaserx";
 import { TILE_WIDTH, TILE_HEIGHT, Animations, Directions } from "../constants";
 
+import * as snarkjs from 'snarkjs';
+
 function decodeHexString(hexString: string): [number, number] {
   const cleanHex = hexString.slice(2);
   const firstHalf = cleanHex.slice(0, cleanHex.length / 2);
   const secondHalf = cleanHex.slice(cleanHex.length / 2);
   return [parseInt(firstHalf, 16), parseInt(secondHalf, 16)];
+}
+
+const proveWrong = async (x: number, y: number) => {
+    const { proof, publicSignals } = await snarkjs.groth16.fullProve(
+        {
+            aX: 1,
+            aY: 1,
+            bX: 2,
+            bY: 2,
+            cX: 2,
+            cY: 3,
+            guessX: x,
+            guessY: y
+        }, "src/zk_artifacts/proveWrong.wasm", "src/zk_artifacts/proveWrong_final.zkey");
+
+    const vkey = await fetch("src/zk_artifacts/verification_key.json").then( function(res) {
+        return res.json();
+    });
+
+    const res = await snarkjs.groth16.verify(vkey, publicSignals, proof);
+
+    let pA = proof.pi_a
+    pA.pop()
+    let pB = proof.pi_b
+    pB.pop()
+    let pC = proof.pi_c
+    pC.pop()
+
+    if(publicSignals[1] == "1")
+    {
+        console.log("Bomb!!")
+    }
 }
 
 export const createMyGameSystem = (layer: PhaserLayer) => {
@@ -87,6 +121,8 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
   defineSystem(world, [Has(PlayerPosition)], ({ entity }) => {
     const playerPosition = getComponentValueStrict(PlayerPosition, entity);
     const pixelPosition = tileCoordToPixelCoord(playerPosition, TILE_WIDTH, TILE_HEIGHT);
+
+    proveWrong(pixelPosition.x/32, pixelPosition.y/32);
 
     const playerObj = objectPool.get(entity, "Sprite");
 
