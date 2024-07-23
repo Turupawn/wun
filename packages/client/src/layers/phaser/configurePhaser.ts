@@ -8,7 +8,7 @@ import {
 } from "@latticexyz/phaserx";
 import worldTileset from "../../../public/assets/tilesets/world.png";
 import { TileAnimations, Tileset } from "../../artTypes/world";
-import { Sprites, Assets, Maps, Scenes, TILE_HEIGHT, TILE_WIDTH, Animations } from "./constants";
+import { Assets, Maps, Scenes, TILE_HEIGHT, TILE_WIDTH, Animations } from "./constants";
 
 const ANIMATION_INTERVAL = 200;
 
@@ -51,20 +51,26 @@ export const phaserConfig = {
         [Maps.Main]: mainMap,
       },
       sprites: {
-        [Sprites.Soldier]: {
-          assetKey: Assets.MainAtlas,
-          frame: "sprites/soldier/idle/0.png",
-        },
       },
       animations: [
         {
-          key: Animations.SwordsmanIdle,
+          key: Animations.Player,
           assetKey: Assets.MainAtlas,
-          startFrame: 0,
-          endFrame: 3,
-          frameRate: 6,
+          startFrame: 1,
+          endFrame: 2,
+          frameRate: 3,
           repeat: -1,
-          prefix: "sprites/soldier/idle/",
+          prefix: "sprites/player/",
+          suffix: ".png",
+        },
+        {
+          key: Animations.Coin,
+          assetKey: Assets.MainAtlas,
+          startFrame: 1,
+          endFrame: 1,
+          frameRate: 12,
+          repeat: -1,
+          prefix: "sprites/coin/",
           suffix: ".png",
         },
       ],
