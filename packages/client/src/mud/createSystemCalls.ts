@@ -14,6 +14,8 @@ import { ClientComponents } from "./createClientComponents";
 import { SetupNetworkResult } from "./setupNetwork";
 import { singletonEntity } from "@latticexyz/store-sync/recs";
 
+import * as snarkjs from 'snarkjs';
+
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
@@ -39,6 +41,8 @@ export function createSystemCalls(
   { worldContract, waitForTransaction }: SetupNetworkResult,
   { Counter }: ClientComponents,
 ) {
+  console.log("Hola");
+  console.log(snarkjs);
   const increment = async () => {
     /*
      * Because IncrementSystem
