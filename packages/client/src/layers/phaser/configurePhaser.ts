@@ -64,16 +64,6 @@ export const phaserConfig = {
           suffix: ".png",
         },
         {
-          key: Animations.Coin,
-          assetKey: Assets.MainAtlas,
-          startFrame: 1,
-          endFrame: 1,
-          frameRate: 12,
-          repeat: -1,
-          prefix: "sprites/coin/",
-          suffix: ".png",
-        },
-        {
           key: Animations.Dead,
           assetKey: Assets.MainAtlas,
           startFrame: 1,

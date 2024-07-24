@@ -9,7 +9,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { worldContract, waitForTransaction }: SetupNetworkResult,
-  { PlayerPosition, CoinPosition }: ClientComponents,
+  { PlayerPosition }: ClientComponents,
 ) {
   const spawn = async (x: number, y: number) => {
     const tx = await worldContract.write.app__spawn([x, y]);
@@ -19,12 +19,6 @@ export function createSystemCalls(
 
   const move = async (direction: number) => {
     const tx = await worldContract.write.app__move([direction]);
-    await waitForTransaction(tx);
-    return getComponentValue(PlayerPosition,  singletonEntity);
-  }
-
-  const generateCoins = async (direction: number) => {
-    const tx = await worldContract.write.app__generateCoins();
     await waitForTransaction(tx);
     return getComponentValue(PlayerPosition,  singletonEntity);
   }
@@ -64,6 +58,6 @@ export function createSystemCalls(
     }
   }
   return {
-    spawn, move, generateCoins, detonateBomb
+    spawn, move, detonateBomb
   };
 }

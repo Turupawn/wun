@@ -8,7 +8,6 @@ export enum Maps {
 
 export enum Animations {
   Player = "Player",
-  Coin = "Coin",
   Dead = "Dead",
 }
 

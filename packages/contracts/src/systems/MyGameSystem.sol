@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { PlayerPosition, PlayerPositionData, CoinPosition, PlayerCoins } from "../codegen/index.sol";
+import { PlayerPosition, PlayerPositionData } from "../codegen/index.sol";
 import { Direction } from "../codegen/common.sol";
 import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
 
@@ -13,12 +13,6 @@ interface ICircomVerifier {
 }
 
 contract MyGameSystem is System {
-  function generateCoins() public {
-    CoinPosition.set(1, 1, true);
-    CoinPosition.set(2, 2, true);
-    CoinPosition.set(2, 3, true);
-  }
-
   function spawn(int32 x, int32 y) public {
     address player = _msgSender();
     PlayerPosition.set(player, x, y, false);
@@ -44,12 +38,6 @@ contract MyGameSystem is System {
 
     PlayerPosition.setX(player, x);
     PlayerPosition.setY(player, y);
-
-    if(CoinPosition.getExists(x, y))
-    {
-      CoinPosition.set(x, y, false);
-      PlayerCoins.set(player, PlayerCoins.getAmount(player)+1);
-    }
   }
 
   function detonateBomb(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[4] calldata _pubSignals, address playerAddress) public {

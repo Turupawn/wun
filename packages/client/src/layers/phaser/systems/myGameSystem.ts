@@ -23,13 +23,11 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
     world,
     networkLayer: {
       components: {
-        PlayerPosition,
-        CoinPosition
+        PlayerPosition
       },
       systemCalls: {
         spawn,
         move,
-        generateCoins,
         detonateBomb
       }
     },
@@ -67,7 +65,7 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
   });
 
   input.onKeyPress((keys) => keys.has("I"), () => {
-    generateCoins();
+    //generateCoins();
   });
 
   defineEnterSystem(world, [Has(PlayerPosition)], ({entity}) => {
@@ -76,16 +74,6 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
         id: 'animation',
         once: (sprite) => {
             sprite.play(Animations.Player);
-        }
-    })
-  });
-
-  defineEnterSystem(world, [Has(CoinPosition)], ({entity}) => {
-    const coinObj = objectPool.get(entity, "Sprite");
-    coinObj.setComponent({
-        id: 'animation',
-        once: (sprite) => {
-          sprite.play(Animations.Coin);
         }
     })
   });
@@ -117,26 +105,5 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
         sprite.setPosition(pixelPosition.x, pixelPosition.y);
       }
     })
-  })
-
-  defineSystem(world, [Has(CoinPosition)], ({ entity }) => {
-    const [coinX, coinY] = decodeHexString(entity);
-
-    const coinExists = getComponentValueStrict(CoinPosition, entity).exists;
-    const pixelPosition = tileCoordToPixelCoord({x: coinX, y: coinY}, TILE_WIDTH, TILE_HEIGHT);
-
-    const coinObj = objectPool.get(entity, "Sprite");
-
-    if(coinExists) {
-      coinObj.setComponent({
-        id: "position",
-        once: (sprite) => {
-          sprite.setPosition(pixelPosition.x, pixelPosition.y);
-        }
-      })
-    }else
-    {
-      objectPool.remove(entity);
-    }
   })
 };

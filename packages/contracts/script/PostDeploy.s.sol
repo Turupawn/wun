@@ -13,8 +13,6 @@ contract PostDeploy is Script {
     uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
     vm.startBroadcast(deployerPrivateKey);
 
-    IWorld(worldAddress).app__generateCoins();
-
     vm.stopBroadcast();
   }
 }

@@ -19,21 +19,6 @@ export default defineWorld({
         isDead: "bool",
       },
       key: ["player"]
-    },
-    CoinPosition: {
-      schema: {
-        x: "int32",
-        y: "int32",
-        exists: "bool",
-      },
-      key: ["x", "y"]
-    },
-    PlayerCoins: {
-      schema: {
-        player: "address",
-        amount: "uint32",
-      },
-      key: ["player"]
     }
   }
 });
