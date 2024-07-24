@@ -6,13 +6,6 @@ import {
 } from "@latticexyz/phaserx";
 import { TILE_WIDTH, TILE_HEIGHT, Animations, Directions } from "../constants";
 
-function decodeHexString(hexString: string): [number, number] {
-  const cleanHex = hexString.slice(2);
-  const firstHalf = cleanHex.slice(0, cleanHex.length / 2);
-  const secondHalf = cleanHex.slice(cleanHex.length / 2);
-  return [parseInt(firstHalf, 16), parseInt(secondHalf, 16)];
-}
-
 function to20ByteAddress(fullAddress: string): string {
     const shortAddress = '0x' + fullAddress.slice(26);
     return shortAddress;
@@ -38,6 +31,9 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
         }
     }
   } = layer;
+
+  // This should be on the server instead
+  let toggle = false;
 
   input.pointerdown$.subscribe((event) => {
     const x = event.pointer.worldX;
@@ -65,7 +61,56 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
   });
 
   input.onKeyPress((keys) => keys.has("I"), () => {
-    //generateCoins();
+    // This should be on the server instead
+    let bombSprite1 = objectPool.get("Bomb1", "Sprite");
+    let bombSprite2 = objectPool.get("Bomb2", "Sprite");
+    let bombSprite3 = objectPool.get("Bomb3", "Sprite");
+    if (toggle == true) {
+      bombSprite1.setComponent({
+        id: "position",
+        once: (sprite1) => {
+          sprite1.setVisible(false);
+        }
+      })
+      bombSprite2.setComponent({
+        id: "position",
+        once: (sprite2) => {
+          sprite2.setVisible(false);
+        }
+      })
+      bombSprite3.setComponent({
+        id: "position",
+        once: (sprite3) => {
+          sprite3.setVisible(false);
+        }
+      })
+    } else {
+      bombSprite1.setComponent({
+        id: 'animation',
+        once: (sprite1) => {
+          sprite1.setVisible(true);
+          sprite1.play(Animations.Bomb);
+          sprite1.setPosition(1*32, 1*32);
+        }
+      })
+      bombSprite2.setComponent({
+        id: 'animation',
+        once: (sprite2) => {
+          sprite2.setVisible(true);
+          sprite2.play(Animations.Bomb);
+          sprite2.setPosition(2*32, 2*32);
+        }
+      })
+      bombSprite3.setComponent({
+        id: 'animation',
+        once: (sprite3) => {
+          sprite3.setVisible(true);
+          sprite3.play(Animations.Bomb);
+          sprite3.setPosition(2*32, 3*32);
+        }
+      })
+    }
+    toggle = !toggle;
   });
 
   defineEnterSystem(world, [Has(Player)], ({entity}) => {
@@ -97,7 +142,6 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
             }
         })
     }
-
 
     playerObj.setComponent({
       id: "position",

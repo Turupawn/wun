@@ -19,6 +19,12 @@ export default defineWorld({
         isDead: "bool",
       },
       key: ["player"]
-    }
+    },
+    BombsCommitment: {
+      schema: {
+        value: "uint32",
+      },
+      key: [],
+    },
   }
 });

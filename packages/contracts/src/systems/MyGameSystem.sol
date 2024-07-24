@@ -2,7 +2,7 @@
 pragma solidity >=0.8.24;
 
 import { System } from "@latticexyz/world/src/System.sol";
-import { Player, PlayerData } from "../codegen/index.sol";
+import { Player, PlayerData, BombsCommitment } from "../codegen/index.sol";
 import { Direction } from "../codegen/common.sol";
 import { getKeysWithValue } from "@latticexyz/world-modules/src/modules/keyswithvalue/getKeysWithValue.sol";
 
@@ -41,8 +41,7 @@ contract MyGameSystem is System {
   }
 
   function detonateBomb(uint[2] calldata _pA, uint[2][2] calldata _pB, uint[2] calldata _pC, uint[4] calldata _pubSignals, address playerAddress) public {
-    //ICircomVerifier(0x9A676e781A523b5d0C0e43731313A708CB607508).verifyProof(_pA, _pB, _pC, _pubSignals);
-    require(!player.isDead, "Player already dead");
+    ICircomVerifier(0x959922bE3CAee4b8Cd9a407cc3ac1C251C2007B1).verifyProof(_pA, _pB, _pC, _pubSignals);
     uint32 commitment = uint32(_pubSignals[0]);
     uint32 result = uint32(_pubSignals[1]);
     int32 guessX = int32(uint32(uint(_pubSignals[2])));
@@ -50,11 +49,12 @@ contract MyGameSystem is System {
 
     PlayerData memory player = Player.get(playerAddress);
 
+    require(!player.isDead, "Player already dead");
     require(result == 1, "No bomb in this position");
-    require(player.x == guessX && player.y == guessY, "Invalid position");
+    require(player.x == guessX && player.y == guessY, "Invalid position ");
     
-    //uint32 secretCommitment = SecretCommitment.get();
-    //require(uint32(uint(commitment)) == secretCommitment, "Invalid commitment");
+    uint32 bombsCommitment = BombsCommitment.get();
+    require(uint32(uint(commitment)) == bombsCommitment, "Invalid commitment");
 
     Player.setIsDead(playerAddress, true);
   }

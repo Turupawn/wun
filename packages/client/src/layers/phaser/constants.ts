@@ -9,6 +9,7 @@ export enum Maps {
 export enum Animations {
   Player = "Player",
   Dead = "Dead",
+  Bomb = "Bomb",
 }
 
 export enum Directions {
