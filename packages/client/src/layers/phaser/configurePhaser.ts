@@ -73,6 +73,16 @@ export const phaserConfig = {
           prefix: "sprites/coin/",
           suffix: ".png",
         },
+        {
+          key: Animations.Dead,
+          assetKey: Assets.MainAtlas,
+          startFrame: 1,
+          endFrame: 1,
+          frameRate: 12,
+          repeat: -1,
+          prefix: "sprites/dead/",
+          suffix: ".png",
+        },
       ],
       tilesets: {
         Default: {

@@ -16,4 +16,12 @@ interface IMyGameSystem {
   function app__spawn(int32 x, int32 y) external;
 
   function app__move(Direction direction) external;
+
+  function app__detonateBomb(
+    uint[2] calldata _pA,
+    uint[2][2] calldata _pB,
+    uint[2] calldata _pC,
+    uint[4] calldata _pubSignals,
+    address playerAddress
+  ) external;
 }

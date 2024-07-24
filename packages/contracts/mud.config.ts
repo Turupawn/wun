@@ -16,6 +16,7 @@ export default defineWorld({
         player: "address",
         x: "int32",
         y: "int32",
+        isDead: "bool",
       },
       key: ["player"]
     },

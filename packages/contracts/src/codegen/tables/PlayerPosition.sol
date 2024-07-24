@@ -19,6 +19,7 @@ import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 struct PlayerPositionData {
   int32 x;
   int32 y;
+  bool isDead;
 }
 
 library PlayerPosition {
@@ -26,12 +27,12 @@ library PlayerPosition {
   ResourceId constant _tableId = ResourceId.wrap(0x74626170700000000000000000000000506c61796572506f736974696f6e0000);
 
   FieldLayout constant _fieldLayout =
-    FieldLayout.wrap(0x0008020004040000000000000000000000000000000000000000000000000000);
+    FieldLayout.wrap(0x0009030004040100000000000000000000000000000000000000000000000000);
 
   // Hex-encoded key schema of (address)
   Schema constant _keySchema = Schema.wrap(0x0014010061000000000000000000000000000000000000000000000000000000);
-  // Hex-encoded value schema of (int32, int32)
-  Schema constant _valueSchema = Schema.wrap(0x0008020023230000000000000000000000000000000000000000000000000000);
+  // Hex-encoded value schema of (int32, int32, bool)
+  Schema constant _valueSchema = Schema.wrap(0x0009030023236000000000000000000000000000000000000000000000000000);
 
   /**
    * @notice Get the table's key field names.
@@ -47,9 +48,10 @@ library PlayerPosition {
    * @return fieldNames An array of strings with the names of value fields.
    */
   function getFieldNames() internal pure returns (string[] memory fieldNames) {
-    fieldNames = new string[](2);
+    fieldNames = new string[](3);
     fieldNames[0] = "x";
     fieldNames[1] = "y";
+    fieldNames[2] = "isDead";
   }
 
   /**
@@ -151,6 +153,48 @@ library PlayerPosition {
   }
 
   /**
+   * @notice Get isDead.
+   */
+  function getIsDead(address player) internal view returns (bool isDead) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
+
+    bytes32 _blob = StoreSwitch.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Get isDead.
+   */
+  function _getIsDead(address player) internal view returns (bool isDead) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
+
+    bytes32 _blob = StoreCore.getStaticField(_tableId, _keyTuple, 2, _fieldLayout);
+    return (_toBool(uint8(bytes1(_blob))));
+  }
+
+  /**
+   * @notice Set isDead.
+   */
+  function setIsDead(address player, bool isDead) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
+
+    StoreSwitch.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((isDead)), _fieldLayout);
+  }
+
+  /**
+   * @notice Set isDead.
+   */
+  function _setIsDead(address player, bool isDead) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = bytes32(uint256(uint160(player)));
+
+    StoreCore.setStaticField(_tableId, _keyTuple, 2, abi.encodePacked((isDead)), _fieldLayout);
+  }
+
+  /**
    * @notice Get the full data.
    */
   function get(address player) internal view returns (PlayerPositionData memory _table) {
@@ -183,8 +227,8 @@ library PlayerPosition {
   /**
    * @notice Set the full data using individual values.
    */
-  function set(address player, int32 x, int32 y) internal {
-    bytes memory _staticData = encodeStatic(x, y);
+  function set(address player, int32 x, int32 y, bool isDead) internal {
+    bytes memory _staticData = encodeStatic(x, y, isDead);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -198,8 +242,8 @@ library PlayerPosition {
   /**
    * @notice Set the full data using individual values.
    */
-  function _set(address player, int32 x, int32 y) internal {
-    bytes memory _staticData = encodeStatic(x, y);
+  function _set(address player, int32 x, int32 y, bool isDead) internal {
+    bytes memory _staticData = encodeStatic(x, y, isDead);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -214,7 +258,7 @@ library PlayerPosition {
    * @notice Set the full data using the data struct.
    */
   function set(address player, PlayerPositionData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.isDead);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -229,7 +273,7 @@ library PlayerPosition {
    * @notice Set the full data using the data struct.
    */
   function _set(address player, PlayerPositionData memory _table) internal {
-    bytes memory _staticData = encodeStatic(_table.x, _table.y);
+    bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.isDead);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -243,10 +287,12 @@ library PlayerPosition {
   /**
    * @notice Decode the tightly packed blob of static data using this table's field layout.
    */
-  function decodeStatic(bytes memory _blob) internal pure returns (int32 x, int32 y) {
+  function decodeStatic(bytes memory _blob) internal pure returns (int32 x, int32 y, bool isDead) {
     x = (int32(uint32(Bytes.getBytes4(_blob, 0))));
 
     y = (int32(uint32(Bytes.getBytes4(_blob, 4))));
+
+    isDead = (_toBool(uint8(Bytes.getBytes1(_blob, 8))));
   }
 
   /**
@@ -260,7 +306,7 @@ library PlayerPosition {
     EncodedLengths,
     bytes memory
   ) internal pure returns (PlayerPositionData memory _table) {
-    (_table.x, _table.y) = decodeStatic(_staticData);
+    (_table.x, _table.y, _table.isDead) = decodeStatic(_staticData);
   }
 
   /**
@@ -287,8 +333,8 @@ library PlayerPosition {
    * @notice Tightly pack static (fixed length) data using this table's schema.
    * @return The static data, encoded into a sequence of bytes.
    */
-  function encodeStatic(int32 x, int32 y) internal pure returns (bytes memory) {
-    return abi.encodePacked(x, y);
+  function encodeStatic(int32 x, int32 y, bool isDead) internal pure returns (bytes memory) {
+    return abi.encodePacked(x, y, isDead);
   }
 
   /**
@@ -297,8 +343,8 @@ library PlayerPosition {
    * @return The lengths of the dynamic fields (packed into a single bytes32 value).
    * @return The dynamic (variable length) data, encoded into a sequence of bytes.
    */
-  function encode(int32 x, int32 y) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
-    bytes memory _staticData = encodeStatic(x, y);
+  function encode(int32 x, int32 y, bool isDead) internal pure returns (bytes memory, EncodedLengths, bytes memory) {
+    bytes memory _staticData = encodeStatic(x, y, isDead);
 
     EncodedLengths _encodedLengths;
     bytes memory _dynamicData;
@@ -314,5 +360,17 @@ library PlayerPosition {
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
     return _keyTuple;
+  }
+}
+
+/**
+ * @notice Cast a value to a bool.
+ * @dev Boolean values are encoded as uint8 (1 = true, 0 = false), but Solidity doesn't allow casting between uint8 and bool.
+ * @param value The uint8 value to convert.
+ * @return result The boolean value.
+ */
+function _toBool(uint8 value) pure returns (bool result) {
+  assembly {
+    result := value
   }
 }
