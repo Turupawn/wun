@@ -22,7 +22,7 @@ template commitmentHasher() {
     commitment <== poseidonComponent.out;
 }
 
-template proveWrong() {
+template detonateBomb() {
     signal input bomb1_x;
     signal input bomb1_y;
     signal input bomb2_x;
@@ -89,4 +89,4 @@ template proveWrong() {
     log(commitment);
 }
 
-component main {public [player_x, player_y]} = proveWrong();
+component main {public [player_x, player_y]} = detonateBomb();

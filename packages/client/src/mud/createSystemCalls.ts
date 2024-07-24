@@ -34,7 +34,7 @@ export function createSystemCalls(
         bomb3_y: 3,
         player_x: x,
         player_y: y
-    }, "src/zk_artifacts/proveWrong.wasm", "src/zk_artifacts/proveWrong_final.zkey");
+    }, "src/zk_artifacts/detonateBomb.wasm", "src/zk_artifacts/detonateBomb_final.zkey");
 
     const vkey = await fetch("src/zk_artifacts/verification_key.json").then( function(res) {
         return res.json();
