@@ -26,14 +26,14 @@ export function createSystemCalls(
   const detonateBomb = async (x: number, y: number, playerAddress: any) => {
     const { proof, publicSignals } = await snarkjs.groth16.fullProve(
     {
-        aX: 1,
-        aY: 1,
-        bX: 2,
-        bY: 2,
-        cX: 2,
-        cY: 3,
-        guessX: x,
-        guessY: y
+        bomb1_x: 1,
+        bomb1_y: 1,
+        bomb2_x: 2,
+        bomb2_y: 2,
+        bomb3_x: 2,
+        bomb3_y: 3,
+        player_x: x,
+        player_y: y
     }, "src/zk_artifacts/proveWrong.wasm", "src/zk_artifacts/proveWrong_final.zkey");
 
     const vkey = await fetch("src/zk_artifacts/verification_key.json").then( function(res) {
@@ -51,7 +51,6 @@ export function createSystemCalls(
 
     if(publicSignals[1] == "1")
     {
-      console.log("Bomb!!");
       const tx = await worldContract.write.app__detonateBomb([pA, pB, pC, publicSignals, playerAddress]);
       await waitForTransaction(tx);
       return getComponentValue(Player,  singletonEntity);
