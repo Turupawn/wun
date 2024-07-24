@@ -16,15 +16,15 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { EncodedLengths, EncodedLengthsLib } from "@latticexyz/store/src/EncodedLengths.sol";
 import { ResourceId } from "@latticexyz/store/src/ResourceId.sol";
 
-struct PlayerPositionData {
+struct PlayerData {
   int32 x;
   int32 y;
   bool isDead;
 }
 
-library PlayerPosition {
-  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "app", name: "PlayerPosition", typeId: RESOURCE_TABLE });`
-  ResourceId constant _tableId = ResourceId.wrap(0x74626170700000000000000000000000506c61796572506f736974696f6e0000);
+library Player {
+  // Hex below is the result of `WorldResourceIdLib.encode({ namespace: "app", name: "Player", typeId: RESOURCE_TABLE });`
+  ResourceId constant _tableId = ResourceId.wrap(0x74626170700000000000000000000000506c6179657200000000000000000000);
 
   FieldLayout constant _fieldLayout =
     FieldLayout.wrap(0x0009030004040100000000000000000000000000000000000000000000000000);
@@ -197,7 +197,7 @@ library PlayerPosition {
   /**
    * @notice Get the full data.
    */
-  function get(address player) internal view returns (PlayerPositionData memory _table) {
+  function get(address player) internal view returns (PlayerData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
@@ -212,7 +212,7 @@ library PlayerPosition {
   /**
    * @notice Get the full data.
    */
-  function _get(address player) internal view returns (PlayerPositionData memory _table) {
+  function _get(address player) internal view returns (PlayerData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = bytes32(uint256(uint160(player)));
 
@@ -257,7 +257,7 @@ library PlayerPosition {
   /**
    * @notice Set the full data using the data struct.
    */
-  function set(address player, PlayerPositionData memory _table) internal {
+  function set(address player, PlayerData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.isDead);
 
     EncodedLengths _encodedLengths;
@@ -272,7 +272,7 @@ library PlayerPosition {
   /**
    * @notice Set the full data using the data struct.
    */
-  function _set(address player, PlayerPositionData memory _table) internal {
+  function _set(address player, PlayerData memory _table) internal {
     bytes memory _staticData = encodeStatic(_table.x, _table.y, _table.isDead);
 
     EncodedLengths _encodedLengths;
@@ -305,7 +305,7 @@ library PlayerPosition {
     bytes memory _staticData,
     EncodedLengths,
     bytes memory
-  ) internal pure returns (PlayerPositionData memory _table) {
+  ) internal pure returns (PlayerData memory _table) {
     (_table.x, _table.y, _table.isDead) = decodeStatic(_staticData);
   }
 

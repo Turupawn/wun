@@ -11,7 +11,7 @@ export default defineWorld({
     ]
   },
   tables: {
-    PlayerPosition: {
+    Player: {
       schema: {
         player: "address",
         x: "int32",

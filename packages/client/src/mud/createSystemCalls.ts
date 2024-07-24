@@ -9,18 +9,18 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { worldContract, waitForTransaction }: SetupNetworkResult,
-  { PlayerPosition }: ClientComponents,
+  { Player }: ClientComponents,
 ) {
   const spawn = async (x: number, y: number) => {
     const tx = await worldContract.write.app__spawn([x, y]);
     await waitForTransaction(tx);
-    return getComponentValue(PlayerPosition, singletonEntity);
+    return getComponentValue(Player, singletonEntity);
   };
 
   const move = async (direction: number) => {
     const tx = await worldContract.write.app__move([direction]);
     await waitForTransaction(tx);
-    return getComponentValue(PlayerPosition,  singletonEntity);
+    return getComponentValue(Player,  singletonEntity);
   }
 
   const detonateBomb = async (x: number, y: number, playerAddress: any) => {
@@ -54,7 +54,7 @@ export function createSystemCalls(
       console.log("Bomb!!");
       const tx = await worldContract.write.app__detonateBomb([pA, pB, pC, publicSignals, playerAddress]);
       await waitForTransaction(tx);
-      return getComponentValue(PlayerPosition,  singletonEntity);
+      return getComponentValue(Player,  singletonEntity);
     }
   }
   return {

@@ -23,7 +23,7 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
     world,
     networkLayer: {
       components: {
-        PlayerPosition
+        Player
       },
       systemCalls: {
         spawn,
@@ -42,10 +42,10 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
   input.pointerdown$.subscribe((event) => {
     const x = event.pointer.worldX;
     const y = event.pointer.worldY;
-    const playerPosition = pixelCoordToTileCoord({ x, y }, TILE_WIDTH, TILE_HEIGHT);
-    if(playerPosition.x == 0 && playerPosition.y == 0)
+    const player = pixelCoordToTileCoord({ x, y }, TILE_WIDTH, TILE_HEIGHT);
+    if(player.x == 0 && player.y == 0)
         return;
-    spawn(playerPosition.x, playerPosition.y) 
+    spawn(player.x, player.y) 
   });
 
   input.onKeyPress((keys) => keys.has("W"), () => {
@@ -68,7 +68,7 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
     //generateCoins();
   });
 
-  defineEnterSystem(world, [Has(PlayerPosition)], ({entity}) => {
+  defineEnterSystem(world, [Has(Player)], ({entity}) => {
     const playerObj = objectPool.get(entity, "Sprite");
     playerObj.setComponent({
         id: 'animation',
@@ -78,14 +78,14 @@ export const createMyGameSystem = (layer: PhaserLayer) => {
     })
   });
 
-  defineSystem(world, [Has(PlayerPosition)], ({ entity }) => {
-    const playerPosition = getComponentValueStrict(PlayerPosition, entity);
-    const pixelPosition = tileCoordToPixelCoord(playerPosition, TILE_WIDTH, TILE_HEIGHT);
+  defineSystem(world, [Has(Player)], ({ entity }) => {
+    const player = getComponentValueStrict(Player, entity);
+    const pixelPosition = tileCoordToPixelCoord(player, TILE_WIDTH, TILE_HEIGHT);
 
     const playerObj = objectPool.get(entity, "Sprite");
 
 
-    if(!playerPosition.isDead)
+    if(!player.isDead)
     {
         detonateBomb(pixelPosition.x/32, pixelPosition.y/32, to20ByteAddress(entity));
     }else
